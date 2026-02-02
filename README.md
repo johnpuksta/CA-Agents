@@ -1,142 +1,221 @@
-# .NET Clean Architecture Skills Collection
+# .NET Clean Architecture Agent System
 
-## Overview
+## What This Is
 
-This collection of Claude Skills provides comprehensive templates and best practices for building .NET applications following Clean Architecture, CQRS, and Domain-Driven Design patterns.
+A coordinated multi-agent system for .NET Clean Architecture development. The **Orchestrator Skill** analyzes your request and coordinates specialized **Subagents** to deliver production-ready code following Clean Architecture principles.
 
-## Skills Index
+## How to Use It
 
-### Core Architecture Skills
-
-| # | Skill | Description | Key Templates |
-|---|-------|-------------|---------------|
-| 1 | **dotnet-clean-architecture** | Project scaffolding | Solution structure, layer setup, DI configuration |
-| 2 | **cqrs-command-generator** | Write operations | Commands, Handlers, Validators |
-| 3 | **cqrs-query-generator** | Read operations | Queries, Dapper SQL, Response DTOs |
-| 4 | **domain-entity-generator** | Domain modeling | Entities, Value Objects, Factory methods |
-| 5 | **repository-pattern** | Data access abstraction | Repository interfaces, EF Core implementations |
-| 6 | **ef-core-configuration** | Database mapping | Fluent API, Relationships, Indexes |
-| 7 | **api-controller-generator** | REST API endpoints | Controllers, Authorization, Versioning |
-| 8 | **result-pattern** | Error handling | Result, Result<T>, Error types |
-| 9 | **domain-events-generator** | Event-driven design | Domain Events, Handlers, Outbox pattern |
-| 10 | **pipeline-behaviors** | Cross-cutting concerns | Logging, Validation, Transaction behaviors |
-
-### Validation Skills
-
-| # | Skill | Description | Key Templates |
-|---|-------|-------------|---------------|
-| 11 | **fluent-validation** | Input validation | AbstractValidator, Custom validators, Async validation |
-
-### Security Skills
-
-| # | Skill | Description | Key Templates |
-|---|-------|-------------|---------------|
-| 12 | **jwt-authentication** | JWT Bearer auth | JwtService, Token validation, Refresh tokens |
-| 13 | **permission-authorization** | Permission-based access | HasPermission attribute, Policy provider |
-
-### Infrastructure Skills
-
-| # | Skill | Description | Key Templates |
-|------|-------|-------------|---------------|
-| 14   | **outbox-pattern** | Reliable messaging | OutboxMessage, Processor job, Idempotency |
-| 15   | **quartz-background-jobs** | Scheduled jobs | IJob, Cron scheduling, Job configuration |
-| 16.1 | **email-service-sendgrid** | Email integration | IEmailService, SendGrid, Templates |
-| 16.2 | **email-service-aws-ses** | Email integration | IEmailService, AWS SES, Local Templates |
-| 17   | **health-checks** | Dependency monitoring | PostgreSQL, HTTP, Custom checks |
-| 18   | **audit-trail** | Change tracking | IAuditable, EF interceptor, Soft delete |
-
-### Data Access Skills
-
-| # | Skill | Description | Key Templates |
-|---|-------|-------------|---------------|
-| 19 | **dapper-query-builder** | Optimized reads | Multi-mapping, Pagination, CTEs |
-| 20 | **specification-pattern** | Query encapsulation | ISpecification, Composable queries |
-
-### Testing Skills
-
-| # | Skill | Description | Key Templates |
-|---|-------|-------------|---------------|
-| 21 | **unit-testing** | Unit tests | xUnit, NSubstitute, FluentAssertions |
-| 22 | **integration-testing** | Integration tests | WebApplicationFactory, Testcontainers, Respawn |
-
----
-
-## Architecture Overview
+### Invoke the Orchestrator Skill
 
 ```
-┌─────────────────────────────────────────────────────────────────┐
-│                          API Layer                               │
-│  • Controllers (api-controller-generator)                        │
-│  • Request/Response DTOs                                         │
-│  • Middleware                                                    │
-│  • Authentication (jwt-authentication)                           │
-│  • Authorization (permission-authorization)                      │
-├─────────────────────────────────────────────────────────────────┤
-│                      Application Layer                           │
-│  • Commands (cqrs-command-generator)                             │
-│  • Queries (cqrs-query-generator)                                │
-│  • Validators (fluent-validation)                                │
-│  • Pipeline Behaviors (pipeline-behaviors)                       │
-│  • Event Handlers (domain-events-generator)                      │
-├─────────────────────────────────────────────────────────────────┤
-│                    Infrastructure Layer                          │
-│  • Repositories (repository-pattern)                             │
-│  • EF Core Configurations (ef-core-configuration)                │
-│  • Dapper Queries (dapper-query-builder)                         │
-│  • Outbox Pattern (outbox-pattern)                               │
-│  • Background Jobs (quartz-background-jobs)                      │
-│  • Email Service (email-service)                                 │
-│  • Audit Trail (audit-trail)                                     │
-│  • Health Checks (health-checks)                                 │
-├─────────────────────────────────────────────────────────────────┤
-│                       Domain Layer                               │
-│  • Entities (domain-entity-generator)                            │
-│  • Value Objects (domain-entity-generator)                       │
-│  • Domain Events (domain-events-generator)                       │
-│  • Result Pattern (result-pattern)                               │
-│  • Specifications (specification-pattern)                        │
-└─────────────────────────────────────────────────────────────────┘
+/orchestrator Create a Product entity with CRUD operations
 ```
 
+The orchestrator analyzes the request and coordinates the appropriate subagents automatically.
+
+### Architecture
+
+```
+┌─────────────────────────────────┐
+│   Orchestrator (Skill)          │  ← Call this via /orchestrator
+│   Runs in main conversation     │
+└────────────┬────────────────────┘
+             │ coordinates
+    ┌────────┴────────┬────────┬────────┬────────┐
+    ▼                 ▼        ▼        ▼        ▼
+domain-agent   application-  infra-   api-   web-agent
+(Subagent)      agent        agent   agent   (Subagent)
+               (Subagent)  (Subagent)(Subagent)
+```
+
+**Key Difference**: The orchestrator is a **skill** (runs in main context, can invoke subagents), while the layer agents are **subagents** (run in isolated contexts).
+
+## What It Understands
+
+The orchestrator dynamically decides which agents to activate based on your request:
+
+| You Ask For | It Activates | Why |
+|-------------|--------------|-----|
+| "Create Order entity" | Domain Agent | Pure domain modeling |
+| "Add CreateOrder command" | Application Agent | CQRS command with handler |
+| "Setup email notifications" | Infrastructure Agent | External service integration |
+| "Create Products API" | Domain → Application → Infrastructure → API | Full CRUD feature |
+| "Build user dashboard" | Application → API → Web | Read-side + UI |
+| "Implement JWT auth" | Infrastructure → API | Cross-layer security |
+| "Add outbox pattern" | Infrastructure Agent | Messaging infrastructure |
+
+Simple tasks get one agent. Complex features get coordinated multi-agent execution.
+
+## The Subagents
+
+The orchestrator coordinates these specialized subagents:
+
+- **domain-agent** - Entities, value objects, domain events, business rules
+- **application-agent** - CQRS commands/queries, handlers, validators, pipeline behaviors
+- **infrastructure-agent** - Repositories, EF Core, Dapper, auth, email, jobs, outbox
+- **api-agent** - Minimal API endpoints, versioning, authorization, middleware
+- **web-agent** - UI components, forms, state management, API integration
+- **mcp-agent** - MCP servers, tools, external integrations
+
+Each subagent has access to specific skills preloaded in their context (see `SKILLS-MAPPING.md` for details).
+
+You can invoke subagents directly if you know which layer you need:
+
+```
+Use the domain-agent to create an Order entity
+Use the application-agent to add a CreateOrderCommand
+Use the infrastructure-agent to implement OrderRepository
+```
+
+However, using `/orchestrator` is recommended as it analyzes and coordinates automatically.
+
+## What It Enforces
+
+Every agent automatically follows Clean Architecture principles:
+
+✅ **Dependencies point inward** - Domain → Application → Infrastructure → API → Web
+✅ **Domain is pure** - Zero infrastructure dependencies
+✅ **DDD patterns** - Entities, aggregates, value objects, domain events
+✅ **CQRS** - Commands modify state, queries read data
+✅ **Result pattern** - Business errors return Result, not exceptions
+✅ **Repository per aggregate** - One repo per aggregate root
+✅ **Proper encapsulation** - Private setters, factory methods, protected invariants
+
+## Example Requests
+
+### Simple
+```
+/orchestrator Create a Category entity with name and description
+```
+
+### Medium
+```
+/orchestrator Add order approval workflow with these rules:
+- Orders over $10k require manager approval
+- Approved orders send email notification
+- Rejected orders include reason
+```
+
+### Complex
+```
+/orchestrator Build a complete survey system with:
+- Survey aggregate with questions and responses
+- CRUD operations for surveys
+- Submit response workflow
+- Analytics query for results
+- Admin API endpoints
+- Survey UI for respondents
+```
+
+## Pro Tips
+
+### Be Specific
+❌ "Add validation"
+✅ "Add validation: email must be unique, password min 8 chars with special char"
+
+### Include Business Rules
+❌ "Create Order entity"
+✅ "Create Order entity that can only be approved if total > 0 and user has approval permission"
+
+### Mention Relationships
+❌ "Create Product"
+✅ "Create Product entity with Category reference and Inventory child entity"
+
+### State Technical Requirements
+❌ "Add authentication"
+✅ "Add JWT authentication with refresh tokens and role-based authorization"
+
+## What Gets Generated
+
+For a typical CRUD feature, you get:
+
+**Domain Layer**
+- Entity with private setters, factory methods, validation
+- Value objects (if needed)
+- Domain events (Created, Updated, Deleted)
+- Repository interface
+- Error definitions
+- Specifications (for complex queries)
+
+**Application Layer**
+- Create/Update/Delete commands with handlers
+- Get/List/Search queries with handlers
+- FluentValidation validators
+- Domain event handlers
+- Response DTOs
+
+**Infrastructure Layer**
+- Repository implementation
+- EF Core entity configuration
+- Database migration (if needed)
+- Dapper queries (for performance-critical reads)
+
+**API Layer**
+- Minimal API endpoints (Microsoft's recommended approach)
+- Request/Response DTOs
+- Authorization attributes
+- TypedResults with proper HTTP status codes
+
+**Plus**
+- Unit tests for each layer
+- Integration tests for workflows
+- XML documentation
+- Proper async/await with CancellationToken
+
+## Advanced Usage
+
+### If You Know Which Layer
+You can invoke subagents directly (but orchestrator is usually better):
+
+```
+Use the domain-agent to create Order aggregate with OrderItem children
+Use the application-agent to add ProcessRefund command
+Use the infrastructure-agent to setup Quartz job to process pending orders
+Use the api-agent to create Orders endpoints with custom search
+```
+
+### Reference Material
+- `SKILLS-MAPPING.md` - Which skills each subagent has access to
+- `~/.claude/skills/00-orchestrator/` - Orchestrator skill documentation
+- `~/.claude/skills/` - Individual skill documentation with detailed patterns
+- `~/.claude/agents/` - Subagent configuration files
+
+## Technical Architecture
+
+### How It Works
+
+1. **Orchestrator Skill** (`~/.claude/skills/00-orchestrator/`)
+   - Runs in main conversation context
+   - Analyzes requests and creates execution plans
+   - Coordinates subagent invocation sequentially
+   - Passes context between subagents
+
+2. **Specialized Subagents** (`~/.claude/agents/`)
+   - Run in isolated contexts
+   - Have specific tool access and preloaded skills
+   - Return results to main conversation
+   - Cannot spawn other subagents (limitation by design)
+
+3. **Skills** (`~/.claude/skills/`)
+   - Loaded into subagent contexts at startup
+   - Provide domain knowledge and patterns
+   - Referenced in subagent YAML frontmatter
+
+### Clean Architecture Dependency Rule
+
+```
+Domain ← Application ← Infrastructure ← API ← Web
+```
+
+The orchestrator enforces this dependency rule across all generated code.
+
+## That's It
+
+You now have an intelligent assistant that understands .NET Clean Architecture patterns, coordinates specialist agents, and generates production-ready code.
+
+**Just call `/orchestrator` and describe what you need.**
+
 ---
 
-## Technology Stack
-
-| Technology | Version | Purpose |
-|------------|---------|---------|
-| .NET | 8+ | Framework |
-| MediatR | 12+ | CQRS implementation |
-| FluentValidation | 11+ | Request validation |
-| Entity Framework Core | 8+ | ORM (write side) |
-| Dapper | 2+ | Micro ORM (read side) |
-| PostgreSQL | 15+ | Database |
-| Quartz.NET | 3+ | Background jobs |
-| Serilog | 3+ | Logging |
-| xUnit | 2.6+ | Testing framework |
-| NSubstitute | 5+ | Mocking |
-| Testcontainers | 3+ | Integration testing |
-
----
-
-## Usage
-
-To use a skill with Claude Code you have some options
-
-- For personal skills available across all projects, you can place them in `~/.claude/skills/`
-- Or just in `./skills/` in your project
-- Personally I like to place them inside the project's git repo, inside a `CLAUDE` directory and mention their location in the main `CLAUDE.md` file in the root of the repo.
-
-Then ask Claude to apply the patterns to your specific use case.
-
-Each skill contains:
-- Overview and purpose
-- Quick reference table
-- Complete code templates
-- Usage examples
-- Best practices
-- Anti-patterns to avoid
-- Related skills
-
----
-
-_Have suggestions or want to contribute? Open an issue or PR on GitHub. Let's make .NET Clean Architecture accessible to everyone._
+**Questions?** The orchestrator can explain its decisions and suggest alternatives. Just ask.
