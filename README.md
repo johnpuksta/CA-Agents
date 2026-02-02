@@ -2,7 +2,11 @@
 
 ## What This Is
 
-A coordinated multi-agent system for .NET Clean Architecture development. The **Orchestrator Skill** analyzes your request and coordinates specialized **Subagents** to deliver production-ready code following Clean Architecture principles.
+A coordinated multi-agent system for **any .NET development task**. The **Orchestrator Skill** analyzes your request and automatically coordinates specialized **Subagents** to deliver production-ready code following Clean Architecture principles.
+
+**Key Point:** You don't need to know which agent or skill to use. Just describe what you need in plain language via `/orchestrator`, and it intelligently determines which subagents to activate and in what order. This works for simple tasks (single agent) or complex features (coordinated multi-agent execution).
+
+> **Inspiration:** This repository was forked off of [dotnet-clean-architecture-skills](https://github.com/ronnythedev/dotnet-clean-architecture-skills) as inspiration for the Clean Architecture skills section.
 
 ## How to Use It
 
@@ -12,7 +16,7 @@ A coordinated multi-agent system for .NET Clean Architecture development. The **
 /orchestrator Create a Product entity with CRUD operations
 ```
 
-The orchestrator analyzes the request and coordinates the appropriate subagents automatically.
+The orchestrator skill runs in your main Claude Code window, analyzes your request, and coordinates the appropriate subagents automatically. You don't need to know which agents to call - just describe what you need.
 
 ### Architecture
 
@@ -31,9 +35,24 @@ domain-agent   application-  infra-   api-   web-agent
 
 **Key Difference**: The orchestrator is a **skill** (runs in main context, can invoke subagents), while the layer agents are **subagents** (run in isolated contexts).
 
+### Why a Skill Instead of a Subagent?
+
+**Technical Limitation:** In Claude Code, subagents cannot spawn other subagents. This is a platform constraint that necessitates the skill-based orchestrator pattern.
+
+**How It Works:**
+1. You load the orchestrator skill into your main Claude Code CLI window
+2. The skill runs in your primary conversation context
+3. When you make a request, the orchestrator analyzes it and determines which subagents to activate
+4. The orchestrator sequentially invokes the appropriate subagents in the correct order
+5. Each subagent executes its specialized task and returns results to the main context
+
+**For Cursor Users:** The same pattern works in Cursor. While Cursor's nested subagent capabilities may differ, using a skill-based orchestrator provides a consistent approach across both platforms and ensures maximum compatibility.
+
 ## What It Understands
 
-The orchestrator dynamically decides which agents to activate based on your request:
+**The orchestrator handles ANY .NET coding task** - from simple utility classes to complex multi-layer features. You don't need to understand Clean Architecture or know which agent to use. Just describe what you need, and it figures out the rest.
+
+The orchestrator dynamically analyzes your request and activates the appropriate agents:
 
 | You Ask For | It Activates | Why |
 |-------------|--------------|-----|
@@ -58,7 +77,7 @@ The orchestrator coordinates these specialized subagents:
 - **web-agent** - UI components, forms, state management, API integration
 - **mcp-agent** - MCP servers, tools, external integrations
 
-Each subagent has access to specific skills preloaded in their context (see `SKILLS-MAPPING.md` for details).
+Each subagent has access to specific skills preloaded in their context. See **[SKILLS-MAPPING.md](./SKILLS-MAPPING.md)** for the complete mapping of which skills each agent can use.
 
 You can invoke subagents directly if you know which layer you need:
 
@@ -176,31 +195,33 @@ Use the api-agent to create Orders endpoints with custom search
 ```
 
 ### Reference Material
-- `SKILLS-MAPPING.md` - Which skills each subagent has access to
-- `~/.claude/skills/00-orchestrator/` - Orchestrator skill documentation
-- `~/.claude/skills/` - Individual skill documentation with detailed patterns
-- `~/.claude/agents/` - Subagent configuration files
+- [`SKILLS-MAPPING.md`](./SKILLS-MAPPING.md) - Complete mapping of which skills each subagent has access to
+- `skills/00-orchestrator/` - Orchestrator skill documentation
+- `skills/` - Individual skill documentation with detailed patterns (27 specialized skills)
+- `agents/` - Subagent configuration files
 
 ## Technical Architecture
 
 ### How It Works
 
-1. **Orchestrator Skill** (`~/.claude/skills/00-orchestrator/`)
-   - Runs in main conversation context
+1. **Orchestrator Skill** (`skills/00-orchestrator/`)
+   - Runs in main conversation context (your CLI window in Claude Code)
    - Analyzes requests and creates execution plans
    - Coordinates subagent invocation sequentially
    - Passes context between subagents
+   - **Critical:** This is a skill, not a subagent, because subagents cannot spawn other subagents in Claude Code
 
-2. **Specialized Subagents** (`~/.claude/agents/`)
-   - Run in isolated contexts
+2. **Specialized Subagents** (`agents/`)
+   - Run in isolated contexts separate from the main conversation
    - Have specific tool access and preloaded skills
    - Return results to main conversation
-   - Cannot spawn other subagents (limitation by design)
+   - **Limitation:** Cannot spawn other subagents - this is why orchestration must happen at the skill level
 
-3. **Skills** (`~/.claude/skills/`)
-   - Loaded into subagent contexts at startup
+3. **Skills** (`skills/`)
+   - Loaded into agent contexts at startup (via YAML frontmatter)
    - Provide domain knowledge and patterns
-   - Referenced in subagent YAML frontmatter
+   - The orchestrator skill is special: it runs in the main context, not in a subagent
+   - Other skills are preloaded into specific subagents based on their layer responsibilities
 
 ### Clean Architecture Dependency Rule
 
@@ -209,6 +230,39 @@ Domain ← Application ← Infrastructure ← API ← Web
 ```
 
 The orchestrator enforces this dependency rule across all generated code.
+
+## Installation & Storage
+
+You can store these files at different levels depending on your needs:
+
+### Repository Level (Project-Specific)
+```
+your-project/
+├── .claude/
+│   ├── skills/
+│   └── agents/
+# OR
+├── .cursor/
+│   ├── skills/
+│   └── agents/
+```
+
+### Global Level (All Projects)
+```
+~/.claude/
+├── skills/
+└── agents/
+# OR
+~/.cursor/
+├── skills/
+└── agents/
+```
+
+**Recommendation:** Use repository-level storage for project-specific customizations, and global storage for reusable patterns across all your .NET projects.
+
+### Learn More About Subagents
+- **Cursor Documentation:** [Subagents Guide](https://cursor.com/docs/context/subagents)
+- **Claude Code Documentation:** [Sub-Agents Guide](https://code.claude.com/docs/en/sub-agents)
 
 ## That's It
 
