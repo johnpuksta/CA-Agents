@@ -2,18 +2,18 @@
 
 ## What This Is
 
-A coordinated multi-agent system for **any .NET development task**. The **Orchestrator Skill** analyzes your request and automatically coordinates specialized **Subagents** to deliver production-ready code following Clean Architecture principles.
+A coordinated multi-agent system for **any .NET development task**. The **Orchestrate CA Agents Skill** analyzes your request and automatically coordinates specialized **Subagents** to deliver production-ready code following Clean Architecture principles.
 
-**Key Point:** You don't need to know which agent or skill to use. Just describe what you need in plain language via `/orchestrator`, and it intelligently determines which subagents to activate and in what order. This works for simple tasks (single agent) or complex features (coordinated multi-agent execution).
+**Key Point:** You don't need to know which agent or skill to use. Just describe what you need in plain language via `/orchestrate-ca-agents`, and it intelligently determines which subagents to activate and in what order. This works for simple tasks (single agent) or complex features (coordinated multi-agent execution).
 
 > **Inspiration:** This repository was forked off of [dotnet-clean-architecture-skills](https://github.com/ronnythedev/dotnet-clean-architecture-skills) as inspiration for the Clean Architecture skills section.
 
 ## How to Use It
 
-### Invoke the Orchestrator Skill
+### Invoke the Orchestrate CA Agents Skill
 
 ```
-/orchestrator Create a Product entity with CRUD operations
+/orchestrate-ca-agents Create a Product entity with CRUD operations
 ```
 
 The orchestrator skill runs in your main Claude Code window, analyzes your request, and coordinates the appropriate subagents automatically. You don't need to know which agents to call - just describe what you need.
@@ -133,7 +133,7 @@ Use the application-agent to add a CreateOrderCommand
 Use the infrastructure-agent to implement OrderRepository
 ```
 
-However, using `/orchestrator` is recommended as it analyzes and coordinates automatically.
+However, using `/orchestrate-ca-agents` is recommended as it analyzes and coordinates automatically.
 
 ## What It Enforces
 
@@ -151,12 +151,12 @@ Every agent automatically follows Clean Architecture principles:
 
 ### Simple
 ```
-/orchestrator Create a Category entity with name and description
+/orchestrate-ca-agents Create a Category entity with name and description
 ```
 
 ### Medium
 ```
-/orchestrator Add order approval workflow with these rules:
+/orchestrate-ca-agents Add order approval workflow with these rules:
 - Orders over $10k require manager approval
 - Approved orders send email notification
 - Rejected orders include reason
@@ -164,7 +164,7 @@ Every agent automatically follows Clean Architecture principles:
 
 ### Complex
 ```
-/orchestrator Build a complete survey system with:
+/orchestrate-ca-agents Build a complete survey system with:
 - Survey aggregate with questions and responses
 - CRUD operations for surveys
 - Submit response workflow
@@ -250,7 +250,7 @@ Use the api-agent to create Orders endpoints with custom search
 
 ### How It Works
 
-1. **Orchestrator Skill** (`skills/orchestrate-ca-agents/`)
+1. **Orchestrate CA Agents Skill** (`skills/orchestrate-ca-agents/`)
    - Runs in main conversation context (your CLI window in Claude Code)
    - Analyzes requests and creates execution plans
    - Coordinates subagent invocation sequentially
@@ -314,7 +314,7 @@ your-project/
 
 You now have an intelligent assistant that understands .NET Clean Architecture patterns, coordinates specialist agents, and generates production-ready code.
 
-**Just call `/orchestrator` and describe what you need.**
+**Just call `/orchestrate-ca-agents` and describe what you need.**
 
 ---
 
