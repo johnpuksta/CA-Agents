@@ -35,13 +35,13 @@ flowchart LR
 
     subgraph orch[" "]
         direction TB
-        U2[👤 User] <--> O[🎯 Orchestrator]
+        U2[👤 User] <--> O[🪄 Orchestrator]
 
-        O <--> SA1[🏛️ Domain Agent]
-        O <--> SA2[⚙️ Infra Agent]
-        O <--> SA3[📱 App Agent]
+        O <--> SA1[🤖 Domain Agent]
+        O <--> SA2[🤖 Infra Agent]
+        O <--> SA3[🤖 App Agent]
         O <--> DOTS[...]
-        O <--> SA4[📦 Agent N]
+        O <--> SA4[🤖 Agent N]
 
         SA1 --> SK1[📚 Skill 1]
         SA1 --> SK2[📚 Skill 2]
