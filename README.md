@@ -81,19 +81,6 @@ flowchart LR
     linkStyle default stroke:#000,stroke-width:2px
 ```
 
-### Why a Skill Instead of a Subagent?
-
-**Technical Limitation:** In Claude Code, subagents cannot spawn other subagents. This is a platform constraint that necessitates the skill-based orchestrator pattern.
-
-**How It Works:**
-1. You load the orchestrator skill into your main Claude Code CLI window
-2. The skill runs in your primary conversation context
-3. When you make a request, the orchestrator analyzes it and determines which subagents to activate
-4. The orchestrator sequentially invokes the appropriate subagents in the correct order
-5. Each subagent executes its specialized task and returns results to the main context
-
-**For Cursor Users:** The same pattern works in Cursor. While Cursor's nested subagent capabilities may differ, using a skill-based orchestrator provides a consistent approach across both platforms and ensures maximum compatibility.
-
 ## What It Understands
 
 **The orchestrator handles ANY .NET coding task** - from simple utility classes to complex multi-layer features. You don't need to understand Clean Architecture or know which agent to use. Just describe what you need, and it figures out the rest.
@@ -139,13 +126,13 @@ However, using `/orchestrate-ca-agents` is recommended as it analyzes and coordi
 
 Every agent automatically follows Clean Architecture principles:
 
-✅ **Dependencies point inward** - Domain → Application → Infrastructure → API → Web
-✅ **Domain is pure** - Zero infrastructure dependencies
-✅ **DDD patterns** - Entities, aggregates, value objects, domain events
-✅ **CQRS** - Commands modify state, queries read data
-✅ **Result pattern** - Business errors return Result, not exceptions
-✅ **Repository per aggregate** - One repo per aggregate root
-✅ **Proper encapsulation** - Private setters, factory methods, protected invariants
+* **Dependencies point inward** - Domain → Application → Infrastructure → API → Web
+* **Domain is pure** - Zero infrastructure dependencies
+* **DDD patterns** - Entities, aggregates, value objects, domain events
+* **CQRS** - Commands modify state, queries read data
+* **Result pattern** - Business errors return Result, not exceptions
+* **Repository per aggregate** - One repo per aggregate root
+* **Proper encapsulation** - Private setters, factory methods, protected invariants
 
 ## Example Requests
 
@@ -228,19 +215,7 @@ For a typical CRUD feature, you get:
 - XML documentation
 - Proper async/await with CancellationToken
 
-## Advanced Usage
-
-### If You Know Which Layer
-You can invoke subagents directly (but orchestrator is usually better):
-
-```
-Use the domain-agent to create Order aggregate with OrderItem children
-Use the application-agent to add ProcessRefund command
-Use the infrastructure-agent to setup Quartz job to process pending orders
-Use the api-agent to create Orders endpoints with custom search
-```
-
-### Reference Material
+## Reference Material
 - [`SKILLS-MAPPING.md`](./SKILLS-MAPPING.md) - Complete mapping of which skills each subagent has access to
 - `skills/orchestrate-ca-agents/` - Orchestrator skill documentation
 - `skills/` - Individual skill documentation with detailed patterns (27 specialized skills)
@@ -268,14 +243,6 @@ Use the api-agent to create Orders endpoints with custom search
    - Provide domain knowledge and patterns
    - The orchestrator skill is special: it runs in the main context, not in a subagent
    - Other skills are preloaded into specific subagents based on their layer responsibilities
-
-### Clean Architecture Dependency Rule
-
-```
-Domain ← Application ← Infrastructure ← API ← Web
-```
-
-The orchestrator enforces this dependency rule across all generated code.
 
 ## Installation & Storage
 
@@ -310,12 +277,3 @@ your-project/
 - **Cursor Documentation:** [Subagents Guide](https://cursor.com/docs/context/subagents)
 - **Claude Code Documentation:** [Sub-Agents Guide](https://code.claude.com/docs/en/sub-agents)
 
-## That's It
-
-You now have an intelligent assistant that understands .NET Clean Architecture patterns, coordinates specialist agents, and generates production-ready code.
-
-**Just call `/orchestrate-ca-agents` and describe what you need.**
-
----
-
-**Questions?** The orchestrator can explain its decisions and suggest alternatives. Just ask.
