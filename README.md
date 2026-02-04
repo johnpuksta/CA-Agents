@@ -35,6 +35,69 @@ domain-agent   application-  infra-   api-   web-agent
 
 **Key Difference**: The orchestrator is a **skill** (runs in main context, can invoke subagents), while the layer agents are **subagents** (run in isolated contexts).
 
+### Single Agent vs Orchestrated Workflow
+
+```mermaid
+flowchart LR
+    subgraph single[" "]
+        direction TB
+        U1[👤 User] --> A1[🤖 Single Agent]
+        A1 --> U1
+
+        A1 ~~~ RISK["❌ RISKS
+• Context diluted
+• More hallucinations
+• Many iterations"]
+    end
+
+    subgraph orch[" "]
+        direction TB
+        U2[👤 User] <--> O[🎯 Orchestrator]
+
+        O <--> SA1[🏛️ Domain Agent]
+        O <--> SA2[⚙️ Infra Agent]
+        O <--> SA3[📱 App Agent]
+        O <--> DOTS[...]
+        O <--> SA4[📦 Agent N]
+
+        SA1 --> SK1[📚 Skill 1]
+        SA1 --> SK2[📚 Skill 2]
+        SA2 --> SK2
+        SA2 --> SK3[📚 Skill 3]
+        SA3 --> SK3
+        SA3 --> SK4[📚 Skill 4]
+        SA4 --> SK4
+        SA4 --> SKN[📚 Skill N]
+
+        O ~~~ WIN["✅ BENEFITS
+• Preserves vision
+• Splits context
+• Runs in parallel"]
+    end
+
+    single ~~~ orch
+
+    style single fill:#fecaca,stroke:#dc2626,stroke-width:2px,color:#000
+    style orch fill:#bbf7d0,stroke:#16a34a,stroke-width:2px,color:#000
+    style U1 fill:#fbbf24,stroke:#b45309,color:#000
+    style A1 fill:#f87171,stroke:#b91c1c,color:#000
+    style RISK fill:#fca5a5,stroke:#dc2626,color:#000
+    style U2 fill:#fbbf24,stroke:#b45309,color:#000
+    style O fill:#3b82f6,stroke:#1d4ed8,color:#fff
+    style SA1 fill:#a78bfa,stroke:#7c3aed,color:#000
+    style SA2 fill:#a78bfa,stroke:#7c3aed,color:#000
+    style SA3 fill:#a78bfa,stroke:#7c3aed,color:#000
+    style SA4 fill:#a78bfa,stroke:#7c3aed,color:#000
+    style DOTS fill:#e5e7eb,stroke:#6b7280,color:#000
+    style SK1 fill:#67e8f9,stroke:#0891b2,color:#000
+    style SK2 fill:#67e8f9,stroke:#0891b2,color:#000
+    style SK3 fill:#67e8f9,stroke:#0891b2,color:#000
+    style SK4 fill:#67e8f9,stroke:#0891b2,color:#000
+    style SKN fill:#67e8f9,stroke:#0891b2,color:#000
+    style WIN fill:#86efac,stroke:#16a34a,color:#000
+    linkStyle default stroke:#000,stroke-width:2px
+```
+
 ### Why a Skill Instead of a Subagent?
 
 **Technical Limitation:** In Claude Code, subagents cannot spawn other subagents. This is a platform constraint that necessitates the skill-based orchestrator pattern.
